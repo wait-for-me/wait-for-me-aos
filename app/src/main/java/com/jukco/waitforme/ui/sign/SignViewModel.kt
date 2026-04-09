@@ -16,7 +16,7 @@ import com.jukco.waitforme.data.network.model.LocalSignInRequest
 import com.jukco.waitforme.data.network.model.PhoneNumCheckRequest
 import com.jukco.waitforme.data.network.model.Provider
 import com.jukco.waitforme.data.network.model.SocialSignInRequest
-import com.jukco.waitforme.data.repository.AuthProvider
+import com.jukco.waitforme.data.auth.AuthProvider
 import com.jukco.waitforme.data.repository.SignRepository
 import com.jukco.waitforme.data.repository.TokenManager
 import com.jukco.waitforme.ui.sign.sign_in.SignInEvent

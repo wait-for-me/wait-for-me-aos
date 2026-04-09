@@ -9,7 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.jukco.waitforme.data.mock.MockAuthProvider
-import com.jukco.waitforme.data.repository.AuthProvider
+import com.jukco.waitforme.data.auth.AuthProvider
 import com.jukco.waitforme.ui.sign.sign_up.SignUpDto
 import com.jukco.waitforme.ui.theme.WaitForMeTheme
 
@@ -33,7 +33,7 @@ fun SocialSignIconButton(
             colors = buttonColors,
             shape = CircleShape,
         ) {
-            content
+            content()
         }
     }
 }

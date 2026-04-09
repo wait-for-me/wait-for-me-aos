@@ -16,13 +16,13 @@ fun MainScreen() {
     val navController = rememberNavController()
 
     Scaffold(
-        bottomBar = { BottomNaviBar(navController) },
+        bottomBar = { BottomNaviBar(navController = navController, startDestination = Route.StoreList) },
     ) { innerPadding ->
         NavigationGraph(
             modifier = Modifier.padding(innerPadding),
             navController = navController,
 //            startDescription = Route.StoreList.name,
-            startDescription = Route.SignGraph.name,
+            startDestination = Route.SignGraph.name,
         )
     }
 }

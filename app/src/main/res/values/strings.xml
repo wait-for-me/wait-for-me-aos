@@ -100,9 +100,13 @@
     <string name="dialog_gender_title">당신의 성별은?</string>
     <string name="dialog_gender_desc">성별은 단순 이벤트 추천을 위해 사용됩니다.</string>
 
+    <string name="title_recommend_1">"이런 "</string>
+    <string name="title_recommend_2">팝업 스토어</string>
+    <string name="title_recommend_3">는 어떤가요?</string>
+    <string name="search_not_found">검색한 팝업 스토어를 못 찾았어요 ㅠㅠ</string>
+
     <string-array name="pops_filter_group">
-        <item>최신순</item>
+        <item>최신등록순</item>
         <item>마감임박순</item>
-        <item>거리순</item>
     </string-array>
 </resources>

@@ -5,11 +5,11 @@ import kotlinx.serialization.Serializable
 
 
 @Serializable
-data class StoreResponse(
+data class StoreListResponse(
     @SerialName(value = "id") val id: Int,
-    @SerialName(value = "imagePath") val imagePath: String,
     @SerialName(value = "title") val title: String,
     @SerialName(value = "host") val host: String,
-    @SerialName(value = "dDay") val dDay: Int,
-    @SerialName(value = "isFavorite") val isFavorite: Boolean
+    @SerialName(value = "imagePath") val imagePath: String,
+    @SerialName(value = "startedAt") val startDate: String,
+    @SerialName(value = "isFavorite") val isFavorite: Boolean,
 )

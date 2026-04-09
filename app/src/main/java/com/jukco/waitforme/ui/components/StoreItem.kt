@@ -22,18 +22,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import com.jukco.waitforme.R
-import com.jukco.waitforme.data.network.model.StoreResponse
+import com.jukco.waitforme.data.mock.MockDataSource
+import com.jukco.waitforme.data.network.model.StoreDto
 import com.jukco.waitforme.ui.theme.GreyAAA
 import com.jukco.waitforme.ui.theme.MainBlack
 import com.jukco.waitforme.ui.theme.NotoSansKR
 import com.jukco.waitforme.ui.theme.WaitForMeTheme
 
 @Composable
-fun RectStoreCard(
-    store: StoreResponse,
-    onItemClicked: (id: Int) -> Unit,
-    onBookmarkChecked: (storeResponse: StoreResponse) -> Unit,
+fun BookmarkRectStoreItem(
     modifier: Modifier = Modifier,
+    store: StoreDto,
+    onItemClicked: (id: Int) -> Unit,
+    onBookmarkChecked: (id: Int) -> Unit,
 ) {
     Column(
         modifier = modifier
@@ -50,10 +51,11 @@ fun RectStoreCard(
                     },
                 ),
                 contentDescription = stringResource(R.string.btn_bookmark),
-                modifier = modifier
+                modifier = Modifier
+                    .clickable { onBookmarkChecked(store.id) }
                     .align(Alignment.BottomEnd)
                     .padding(8.dp)
-                    .clickable { onBookmarkChecked(store) },
+                ,
             )
         }
         Spacer(modifier = Modifier.height(10.dp))
@@ -90,19 +92,81 @@ fun RectStoreCard(
 }
 
 @Composable
-fun SquareStoreCard(
-    storeResponse: StoreResponse,
+fun BookmarkSquareStoreItem(
+    modifier: Modifier = Modifier,
+    store: StoreDto,
+    onItemClicked: (id: Int) -> Unit,
+    onBookmarkChecked: (id: Int) -> Unit,
+) {
+    Column(
+        modifier = modifier
+            .clickable { onItemClicked(store.id) },
+    ) {
+        Box(modifier = modifier) {
+            SquareThumbnail(store.imagePath)
+            Image(
+                painter = painterResource(
+                    if (store.isFavorite) {
+                        R.drawable.ic_bookmark_fill
+                    } else {
+                        R.drawable.ic_bookmark_line_white
+                    },
+                ),
+                contentDescription = stringResource(R.string.btn_bookmark),
+                modifier = Modifier
+                    .clickable { onBookmarkChecked(store.id) }
+                    .align(Alignment.BottomEnd)
+                    .padding(end = 8.dp, bottom = 11.dp)
+                ,
+            )
+        }
+        Spacer(modifier = Modifier.height(10.dp))
+        Text(
+            text = store.title,
+            style = TextStyle(
+                fontFamily = NotoSansKR,
+                fontWeight = FontWeight.Medium,
+                fontSize = 14.sp,
+                color = MainBlack,
+                lineHeight = 14.sp,
+                platformStyle = PlatformTextStyle(includeFontPadding = false),
+                letterSpacing = (-0.05).em,
+            ),
+            overflow = TextOverflow.Ellipsis,
+            maxLines = 1,
+        )
+        Spacer(modifier = Modifier.height(6.dp))
+        Text(
+            text = store.host,
+            style = TextStyle(
+                fontFamily = NotoSansKR,
+                fontWeight = FontWeight.Medium,
+                fontSize = 12.sp,
+                color = GreyAAA,
+                lineHeight = 12.sp,
+                platformStyle = PlatformTextStyle(includeFontPadding = false),
+                letterSpacing = (-0.05).em,
+            ),
+            overflow = TextOverflow.Ellipsis,
+            maxLines = 1,
+        )
+    }
+}
+
+@Composable
+fun NoBookmarkStoreItem(
+    store: StoreDto,
     onClicked: (id: Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier
-            .clickable { onClicked(storeResponse.id) },
+            .clickable { onClicked(store.id) },
     ) {
-        SquareThumbnail(imagePath = storeResponse.imagePath)
+        SquareThumbnail(imagePath = store.imagePath)
         Spacer(modifier = modifier.height(8.dp))
         Text(
-            text = storeResponse.title,
+            text = store.title,
             style = TextStyle(
                 fontFamily = NotoSansKR,
                 fontWeight = FontWeight.Medium,
@@ -119,21 +183,27 @@ fun SquareStoreCard(
 }
 
 // ======================================= Preview ===============================================================
-
-private val exStoreResponse = StoreResponse(0, "", "팝스토어 이름", "팝스토어 주최자", 0, true)
-
 @Preview(showBackground = true)
 @Composable
-private fun RectStoreCardPreview() {
+private fun BookmarkRectStoreItemPreview() {
     WaitForMeTheme {
-        RectStoreCard(store = exStoreResponse, onItemClicked = {}, onBookmarkChecked = {})
+        BookmarkRectStoreItem(store = MockDataSource.storeDtoList[0], onItemClicked = {}, onBookmarkChecked = {})
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-private fun SmallStoreCardPreview() {
+private fun BookmarkSquareStoreItemPreview() {
     WaitForMeTheme {
-        SquareStoreCard(storeResponse = exStoreResponse, onClicked = {})
+        BookmarkRectStoreItem(store = MockDataSource.storeDtoList[0], onItemClicked = {}, onBookmarkChecked = {})
+    }
+}
+
+
+@Preview(showBackground = true)
+@Composable
+private fun NoBookmarkStoreItemPreview() {
+    WaitForMeTheme {
+        NoBookmarkStoreItem(store = MockDataSource.storeDtoList[0], onClicked = {})
     }
 }

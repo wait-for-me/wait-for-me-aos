@@ -1,4 +1,4 @@
-package com.jukco.waitforme.data.repository
+package com.jukco.waitforme.data.auth
 
 import androidx.compose.runtime.Composable
 import com.jukco.waitforme.ui.sign.social.AuthUiProvider

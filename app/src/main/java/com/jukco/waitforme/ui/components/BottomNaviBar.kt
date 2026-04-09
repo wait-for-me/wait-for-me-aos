@@ -26,7 +26,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -38,17 +37,18 @@ import com.jukco.waitforme.ui.theme.WaitForMeTheme
 @Composable
 fun BottomNaviBar(
     navController: NavHostController,
+    startDestination: Route,
     modifier: Modifier = Modifier
 ) {
-    val navBAckStackEntry by navController.currentBackStackEntryAsState()
-    val currentDestination = navBAckStackEntry?.destination
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentDestination = navBackStackEntry?.destination
 
     when (currentDestination?.route) {
-        BottomNaviItem.StoreManagement.route -> BottomNavi(navController, currentDestination, modifier)
-        BottomNaviItem.StoreList.route -> BottomNavi(navController, currentDestination, modifier)
-        BottomNaviItem.WaitInfo.route -> BottomNavi(navController, currentDestination, modifier)
-        BottomNaviItem.Bookmark.route -> BottomNavi(navController, currentDestination, modifier)
-        BottomNaviItem.MyInfo.route -> BottomNavi(navController, currentDestination, modifier)
+        BottomNaviItem.StoreManagement.route -> BottomNavi(navController, startDestination, currentDestination)
+        BottomNaviItem.StoreList.route -> BottomNavi(navController, startDestination, currentDestination)
+        BottomNaviItem.WaitInfo.route -> BottomNavi(navController, startDestination, currentDestination)
+        BottomNaviItem.Bookmark.route -> BottomNavi(navController, startDestination, currentDestination)
+        BottomNaviItem.MyInfo.route -> BottomNavi(navController, startDestination, currentDestination)
         else -> Unit
     }
 }
@@ -56,8 +56,8 @@ fun BottomNaviBar(
 @Composable
 fun BottomNavi(
     navController: NavHostController,
+    startDestination: Route,
     currentDestination: NavDestination?,
-    modifier: Modifier
 ) {
     NavigationBar(
         modifier = Modifier.fillMaxWidth(),
@@ -71,7 +71,7 @@ fun BottomNavi(
                 modifier = Modifier.alpha(opacity),
                 onClick = {
                     navController.navigate(bottomNaviItem.route) {
-                        popUpTo(navController.graph.findStartDestination().id) {
+                        popUpTo(startDestination.name) {
                             saveState = true
                         }
                         launchSingleTop = true
@@ -113,8 +113,8 @@ private fun BottomNaviBarPreview() {
     WaitForMeTheme {
         BottomNavi(
             navController = rememberNavController(),
+            startDestination = Route.StoreList,
             currentDestination = null,
-            modifier = Modifier
         )
     }
 }

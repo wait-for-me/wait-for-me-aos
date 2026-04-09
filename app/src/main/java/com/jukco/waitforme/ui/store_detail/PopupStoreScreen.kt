@@ -139,7 +139,7 @@ fun PopupStoreScreen(
                 },
                 onBookmarkClicked = viewModel::onClickBookmark,
                 copyStoreAddress = {
-                                   copyStoreAddress(currentContext, store.address)
+                    copyStoreAddress(currentContext, store.address)
                 },
                 modifier = modifier,
             )
@@ -199,7 +199,7 @@ fun StoreDetail(
         bottomBar = {
             Button(
                 onClick = { /*TODO : 예약하기 */ },
-                contentPadding = PaddingValues(horizontal = 64.dp, vertical = (13.5).dp),
+                contentPadding = PaddingValues(horizontal = 134.dp, vertical = (13.5).dp),
                 shape = RoundedCornerShape(4.dp),
                 enabled = !store.isReserved,
                 modifier = modifier
@@ -318,12 +318,17 @@ private fun ImagePager(
     images: List<ImageInfo>,
     modifier: Modifier = Modifier,
 ) {
-    val pagerState = rememberPagerState()
+    val pagerState = rememberPagerState(pageCount = {
+        images.size
+    })
     val coroutineScope = rememberCoroutineScope()
 
     Box {
         // MAIN, DETAIL이 여기서 쓰이는가? 순서대로 주는 것이 아닌가?
-        HorizontalPager(pageCount = images.size, state = pagerState) { index ->
+        HorizontalPager(
+            state = pagerState,
+            key = { it },
+        ) { index ->
             AsyncImage(
                 model = ImageRequest.Builder(context = LocalContext.current)
                     .data(images[index].path)
@@ -355,13 +360,7 @@ private fun ImagePager(
                         .clip(CircleShape)
                         .background(color)
                         .size(8.dp)
-                        .clickable {
-                            coroutineScope.launch {
-                                pagerState.animateScrollToPage(
-                                    iteration,
-                                )
-                            }
-                        },
+                        ,
                 )
             }
         }

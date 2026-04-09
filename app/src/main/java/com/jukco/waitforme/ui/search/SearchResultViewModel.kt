@@ -1,11 +1,12 @@
-package com.jukco.waitforme.ui.store_list
+package com.jukco.waitforme.ui.search
 
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
+import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
@@ -18,6 +19,7 @@ import com.jukco.waitforme.data.network.model.StoreDto
 import com.jukco.waitforme.data.repository.BookmarkRepository
 import com.jukco.waitforme.data.repository.StoreRepository
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
@@ -26,34 +28,52 @@ import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
 
-
-class StoreListViewModel(
+class SearchResultViewModel(
+    savedStateHandle: SavedStateHandle,
     private val storeRepository: StoreRepository,
     private val bookmarkRepository: BookmarkRepository,
 ) : ViewModel() {
-    var storeListUiState: StoreListUiState by mutableStateOf(StoreListUiState.Loading)
+    private val _searchedStores = MutableStateFlow<PagingData<StoreDto>?>(null)
+    private val _recommendStores = MutableStateFlow<PagingData<StoreDto>?>(null)
+    val query: String = checkNotNull(savedStateHandle["query"])
+    val searchedStores: Flow<PagingData<StoreDto>> = _searchedStores.filterNotNull()
+    val recommendStores: Flow<PagingData<StoreDto>> = _recommendStores.filterNotNull()
+    var currentTab by mutableIntStateOf(0)
         private set
-    private val _ongoingStores = MutableStateFlow<PagingData<StoreDto>?>(null)
-    private val _upcomingStores = MutableStateFlow<PagingData<StoreDto>?>(null)
+
 
     init {
         refresh()
     }
 
-    fun refresh() {
+    fun refresh(title: String = query, sorter: ShopSorter = ShopSorter.NEWEST) {
         viewModelScope.launch {
-            storeListUiState = try {
-                _ongoingStores.value = async {
-                    storeRepository.getStoreList(sorter = ShopSorter.DEADLINE).cachedIn(viewModelScope).first()
+            try {
+                _searchedStores.value = async {
+                    storeRepository.getStoreList(
+                        title = title,
+                        sorter = sorter
+                    ).cachedIn(viewModelScope).first()
                 }.await()
-                _upcomingStores.value = async {
+            } catch (e: IOException) {
+                // TODO: 실패 안내
+            } catch (e: HttpException) {
+                // TODO: 실패 안내
+            }
+        }
+    }
+
+    fun recommend() {
+        viewModelScope.launch {
+            try {
+                _recommendStores.value = async {
                     storeRepository.getStoreList(sorter = ShopSorter.NEWEST).cachedIn(viewModelScope).first()
                 }.await()
-                StoreListUiState.Success(_ongoingStores.filterNotNull(), _upcomingStores.filterNotNull())
+
             } catch (e: IOException) {
-                StoreListUiState.Error
+                // TODO: 실패 안내
             } catch (e: HttpException) {
-                StoreListUiState.Error
+                // TODO: 실패 안내
             }
         }
     }
@@ -62,7 +82,7 @@ class StoreListViewModel(
         viewModelScope.launch {
             try {
                 val response = bookmarkRepository.postBookmark(shopId)
-                _ongoingStores.update { pagingData ->
+                _searchedStores.update { pagingData ->
                     pagingData?.map { store ->
                         if (store.id == shopId) {
                             store.copy(isFavorite = response.body()!!)
@@ -80,13 +100,31 @@ class StoreListViewModel(
         }
     }
 
+    fun sortStores(tab: Int) {
+        currentTab = tab
+
+        when (tab) {
+            NEWEST_TAB -> {
+                refresh(sorter = ShopSorter.NEWEST)
+            }
+            DEADLINE_TAB -> {
+                refresh(sorter = ShopSorter.DEADLINE)
+            }
+        }
+    }
+
+
     companion object {
+        const val NEWEST_TAB = 0
+        const val DEADLINE_TAB = 1
+
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
-                val application = (this[APPLICATION_KEY] as ApplicationClass)
+                val savedStateHandle = this.createSavedStateHandle()
+                val application = (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as ApplicationClass)
                 val storeRepository = application.container.storeRepository
                 val bookmarkRepository = application.container.bookmarkRepository
-                StoreListViewModel(storeRepository, bookmarkRepository)
+                SearchResultViewModel(savedStateHandle, storeRepository, bookmarkRepository)
             }
         }
     }

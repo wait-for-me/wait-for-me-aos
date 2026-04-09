@@ -14,7 +14,7 @@ import com.jukco.waitforme.config.ApplicationClass
 import com.jukco.waitforme.data.network.model.Provider
 import com.jukco.waitforme.data.network.model.UserInfoRequest
 import com.jukco.waitforme.data.network.model.UserInfoRes
-import com.jukco.waitforme.data.repository.AuthProvider
+import com.jukco.waitforme.data.auth.AuthProvider
 import com.jukco.waitforme.data.repository.SignRepository
 import com.jukco.waitforme.data.repository.TokenManager
 import com.jukco.waitforme.data.repository.UserRepository

@@ -1,4 +1,4 @@
-package com.jukco.waitforme.data.repository
+package com.jukco.waitforme.data.auth
 
 import android.util.Log
 import androidx.compose.runtime.Composable
